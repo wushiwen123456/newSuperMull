@@ -25,7 +25,7 @@ body {
   user-select: none;/*禁止用户在页面上选中文字/图片*/
   -webkit-tap-highlight-color: transparent;
   /* webkit是苹果浏览器引擎，tap点击，highlight背景高亮，color黑色，颜色用数值调节 */
-  background: var(--color-high-text);
+  /* background: var(--color-high-text); */
   color: var(--color-text);
   /* rem vw//vh */
   width: 100vw;
