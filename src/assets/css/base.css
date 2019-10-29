@@ -1,7 +1,7 @@
-@import './normalize.css';
+/* @import './normalize.css'; */
 
 /* :root=>获取根元素 */
-
+ 
 :root{
   --color-text:#666;
   --color-high-text:#ff5777;
@@ -22,14 +22,14 @@
 
 body {
   font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arical,sans-serif;
-  user-select: none;/*禁止用户在页面上选中文字/图片*/
-  -webkit-tap-highlight-color: transparent;
+  /*禁止用户在页面上选中文字/图片*/
+  user-select: none;
+  /* -webkit-tap-highlight-color: transparent; */
   /* webkit是苹果浏览器引擎，tap点击，highlight背景高亮，color黑色，颜色用数值调节 */
   /* background: var(--color-high-text); */
   color: var(--color-text);
   /* rem vw//vh */
   width: 100vw;
-  overflow: hidden;
 }
 a {
   color: var(--color-text);
