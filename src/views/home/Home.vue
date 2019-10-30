@@ -4,7 +4,11 @@
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
        
     <!-- 使用better-scroll组件 -->
-    <scroll class="content" ref="scroll">
+    <scroll class="content" 
+            ref="scroll" 
+            :probe-type="3" 
+            @scroll="contentScroll" 
+            :pull-up-load="true">
       <!-- 引入轮播插件 -->
       <home-swiper :banners="banners"/>
       <!-- 轮播下面的圆形图 -->
@@ -19,7 +23,7 @@
     <!-- 回到顶部 .native
       当我们在父组件给子组件添加原生事件时用.native
     -->
-    <back-top @click.native="backClick"></back-top>
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -50,7 +54,8 @@ export default {
         ,'new':{page:0,list:[]}
         ,'sell':{page:0,list:[]}
       },
-      currentType:'pop'
+      currentType:'pop',
+      isShowBackTop:false
     }
   },
   components:{
@@ -72,6 +77,14 @@ export default {
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
   },
+  mounted(){
+    //3.监听item中图片加载完成
+    this.$bus.$on('itemImageLoad',()=> {
+      //进行防抖操作:debounce,节流：throttle
+      this.$refs.scroll.refresh()
+      console.log('-----')
+    })
+  },
   methods:{
     /*
       事件监听相关的方法
@@ -88,8 +101,8 @@ export default {
           this.currentType = 'sell'
           break
       }
+    
     },
-
 
     /*
       获取网络请求相关方法
@@ -110,7 +123,14 @@ export default {
     },
     backClick(){
       this.$refs.scroll.scrollTo(0,0,500)
-    }
+    },
+    //设置滚动事件  
+    contentScroll(position){
+      // console.log(position)
+      this.isShowBackTop = (-position.y) > 1000;
+    },
+    //加载更多方法
+    
   },
   computed:{
     showGoods(){
