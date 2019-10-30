@@ -2,6 +2,7 @@
  <div>
     <div class="wrapper" ref="aaa">
       <ul class="content" >
+    <li><button @click="myClick">按钮</button></li>
     <li>分类列表1</li>
     <li>分类列表2</li>
     <li>分类列表3</li>
@@ -118,20 +119,42 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$refs.aaa)
     console.log(document.querySelector('.wrapper'))
     this.scroll = new BScroll(document.querySelector('.wrapper'),{
+      //probe:侦测
+      //0,1都是不侦测
+      //2.手指在上面时侦测，手指离开后的惯性滚动不侦测
+      //3.只要是滚动，都侦测
+      probeType:2,
+      click:true,
+      pullUpLoad:true
+    })
+    this.scroll.on('scroll',(position) => {
+      // console.log(position)
+    })
+    this.scroll.on('pullingUp', ()=> {
+      console.log('上拉加载更多')
+      //发送网络请求
 
+
+      //等数据请求完成，并且将 新的数据展示出来之后
+      setTimeout(() => {
+        this.scroll.finishPullUp();
+      }, 2000);
     })
   },
+  methods:{
+    myClick(){
+      console.log('btn')
+    }
+  }
 }
 </script>
 
 <style scoped>
   .wrapper{
-    height: 150px;
+    height: 300px;
     background-color: #f00;
     overflow: hidden;
-    /* overflow-y: scroll; */
   }
 </style>
