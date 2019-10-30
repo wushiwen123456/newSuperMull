@@ -2,7 +2,7 @@
   <swiper ref="swiper" v-if="banners.length">
     <swiper-item v-for="(item, index) in banners" :key="index">
       <a :href="item.link">
-        <img :src="item.image" alt="">
+        <img :src="item.image" alt="" @load="imageLoad">
       </a>
     </swiper-item>
   </swiper>
@@ -17,6 +17,11 @@
 		  Swiper,
       SwiperItem
     },
+    data(){
+      return {
+        isLoad:false
+      }
+    },
     props: {
 		  banners: {
 		    type: Array,
@@ -30,6 +35,12 @@
       startTimer() {
 		    if (this.$refs.swiper) {
           this.$refs.swiper.startTimer()
+        }
+      },
+      imageLoad(){
+        if(!this.isLoad){
+          this.$emit('swiperImageLoad')
+          this.isLoad = true
         }
       }
     }

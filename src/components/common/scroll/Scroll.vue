@@ -29,28 +29,35 @@ export default {
     //1.创建BScroll对象
     this.scroll  =  new BScroll(this.$refs.wrapper,{
       click:true,
-      probeType:this.probeType,
-      pullUpLoad:this.pullUpLoad
+      probeType:this.probeType,  //-设置为2或者3时才能监听滚动的高度
+      pullUpLoad:this.pullUpLoad //-设置为true时才能监听上拉刷新方法
     })  
 
     //2.监听滚动的位置
-    this.scroll.on('scroll',(position) => {
-      // console.log(position)
-      this.$emit('scroll',position)
-    })
+    if(this.probeType === 2 || this.probeType === 3){
+      this.scroll.on('scroll',(position) => {
+        // console.log(position)
+        this.$emit('scroll',position)
+      })
+    }
 
     //3.上拉加载回调
-    this.scroll.on('pullingUp', () => {
-      this.$emit('pullingUp')
-    })
+    if(this.pullUpLoad) {
+      this.scroll.on('pullingUp', () => {
+        this.$emit('pullingUp')
+      })
+    }
   },
   methods:{
+    //回到顶部方法
     scrollTo(x,y,time=300){
       this.scroll && this.scroll.scrollTo(x,y,time)
     },
+    //加载更多方法
     finishPullUp(){
-      this.scroll.finishPullUp()
+      this.scroll && this.scroll.finishPullUp()
     },
+    //重置scroll方法
     refresh(){
       this.scroll && this.scroll.refresh()
     }

@@ -2,21 +2,30 @@
   <div id="home">
     <!-- 导航栏 -->
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-       
+    <tab-control :titles="['流行','新款','精选']" 
+                    @tabClick="tabClick" 
+                    ref="tabControl1"
+                    class="tab-control"
+                    v-show="isTabFixed"/>
     <!-- 使用better-scroll组件 -->
+    
     <scroll class="content" 
             ref="scroll" 
             :probe-type="3" 
             @scroll="contentScroll" 
-            :pull-up-load="true">
+            :pull-up-load="true"
+            @pullingUp="loadMore">
       <!-- 引入轮播插件 -->
-      <home-swiper :banners="banners"/>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"/>
       <!-- 轮播下面的圆形图 -->
       <recommend-view :recommends="recommends"/>
       <!-- 推荐部分 -->
       <feature-view/>
-      <tab-control :titles="['流行','新款','精选']" class="tab-control-home" @tabClick="tabClick" />
-      <!-- 流行--新款--精选 -->
+      <tab-control :titles="['流行','新款','精选']" 
+                    @tabClick="tabClick" 
+                    ref="tabControl2"
+                    :class="{fixed:isTabFixed}"/>
+      <!-- list数据部分 -->
       <goods-list :goods="showGoods"  />
     </scroll> 
 
@@ -42,6 +51,8 @@ import {
   getHomeGoods      
 }from 'network/home'
 
+import {debounce} from 'common/utils'
+
 
 export default {
   name:"Home",
@@ -55,7 +66,9 @@ export default {
         ,'sell':{page:0,list:[]}
       },
       currentType:'pop',
-      isShowBackTop:false
+      isShowBackTop:false,
+      tabOffsetTop:0,
+      isTabFixed:false
     }
   },
   components:{
@@ -78,12 +91,14 @@ export default {
       this.getHomeGoods('sell')
   },
   mounted(){
+    //图片加载时间监听
+    const ref = debounce(this.$refs.scroll.refresh,400)
     //3.监听item中图片加载完成
     this.$bus.$on('itemImageLoad',()=> {
       //进行防抖操作:debounce,节流：throttle
-      this.$refs.scroll.refresh()
-      console.log('-----')
+      ref()
     })
+
   },
   methods:{
     /*
@@ -101,7 +116,8 @@ export default {
           this.currentType = 'sell'
           break
       }
-    
+      this.$refs.tabControl1.currentIndex = index
+      this.$refs.tabControl2.currentIndex = index
     },
 
     /*
@@ -109,7 +125,7 @@ export default {
     */
     getHomeMultidata(){
       getHomeMultidata().then(res => {
-        // console.log(res)
+        
         this.banners = res.data.banner.list
         this.recommends = res.data.recommend.list
       })
@@ -119,18 +135,32 @@ export default {
       getHomeGoods(type,page).then(res => {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page = page
+      }).catch(err => {
+        throw err
       })
     },
+                                                                      
+    //回到顶部
     backClick(){
       this.$refs.scroll.scrollTo(0,0,500)
     },
     //设置滚动事件  
-    contentScroll(position){
-      // console.log(position)
+    contentScroll(position){  
+      //1.判断BackTop是否显示
       this.isShowBackTop = (-position.y) > 1000;
+
+      //2.决定tabControl是否吸顶(position:fixed)
+      this.isTabFixed = (-position.y) > this.tabOffsetTop
     },
     //加载更多方法
-    
+    loadMore(){
+      this.getHomeGoods(this.currentType)
+      this.$refs.scroll.finishPullUp()
+    },
+    swiperImageLoad(){
+      //获取tabControl的offsetTop
+      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+    }
   },
   computed:{
     showGoods(){
@@ -142,25 +172,13 @@ export default {
 
 <style scoped>
   #home{
-    padding-top: 44px;
    height: 100vh;
    position: relative;
   }
  .home-nav{
    background-color: var(--color-tint);
    color: #fff;
-   position: fixed;
-   left: 0;
-   right: 0;
-   top: 0;
-   z-index: 8;
  }
-  .tab-control-home{
-    position: sticky;
-    top: 44px;
-    z-index: 9;
-    background-color: #fff;
-  }
   .content{
     overflow: hidden;
     position: absolute;
@@ -168,6 +186,9 @@ export default {
     bottom: 49px;
     left: 0;
     right: 0;
-    background-color: #fff;
+  }
+  .tab-control{
+    position: relative;
+    z-index: 32;
   }
 </style>
