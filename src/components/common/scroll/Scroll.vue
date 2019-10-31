@@ -60,6 +60,10 @@ export default {
     //重置scroll方法
     refresh(){
       this.scroll && this.scroll.refresh()
+    },
+    //得到滚动的Y值
+    getScrollY(){
+      return this.scroll ? this.scroll.y : 0
     }
   }
 }

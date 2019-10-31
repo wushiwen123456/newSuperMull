@@ -68,7 +68,8 @@ export default {
       currentType:'pop',
       isShowBackTop:false,
       tabOffsetTop:0,
-      isTabFixed:false
+      isTabFixed:false,
+      saveY:0
     }
   },
   components:{
@@ -166,6 +167,16 @@ export default {
     showGoods(){
       return this.goods[this.currentType].list
     }
+  },
+  /**
+   * 保存离开时滚动的位置，下次点击进入的时候自动到这里
+   */
+  activated(){
+    this.$refs.scroll.scrollTo(0,this.saveY)
+    this.$refs.scroll.refresh()
+  },
+  deactivated(){
+    this.saveY = this.$refs.scroll.getScrollY()
   }
 }
 </script>
