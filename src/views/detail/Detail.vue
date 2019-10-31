@@ -1,11 +1,16 @@
 <template>
   <div id="detail">
     <detail-nav-bar class="detail-nav"/>
-    <scroll class="content">
+    <!-- 使用better-scroll组件 -->
+    <scroll class="content" 
+            ref="scroll" 
+            @scroll="contentScroll"
+            :probe-type="3">
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detial-base-info :goods="Goods"/>
       <detail-shop-info :shop="shop"/>
-      <detail-goods-info :goods-info="detailInfo"/>
+      <detail-goods-info :goods-info="detailInfo" @imageLoad="imageLoad"/>
+      <detail-param-info :param-info="DetailParamInfo" />
     </scroll>
   </div>
 </template>
@@ -17,12 +22,15 @@ import DetailSwiper from './childComps/DetailSwiper'
 import DetialBaseInfo from './childComps/DetialBaseInfo'
 import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailGoodsInfo from './childComps/DetailGoodsInfo'
+import DetailParamInfo from './childComps/DetailParamInfo'
 
 // 导入公共模块
 import Scroll from 'components/common/scroll/Scroll'
 
 //导入网络请求模块
-import {getDetail,Goods,shop} from 'network/detail'
+import {getDetail,Goods,shop,GoodsParam} from 'network/detail'
+//导入工具类
+import { throttle } from "common/utils"
 
 export default {
   name:"Detail",
@@ -32,7 +40,9 @@ export default {
       topImages:[],
       Goods:{},
       shop:{},
-      detailInfo:{}
+      detailInfo:{},
+      DetailParamInfo:{},
+      canRun:""//保存节流函数
     }
   },
   components:{
@@ -41,6 +51,7 @@ export default {
     DetialBaseInfo,
     DetailShopInfo,
     DetailGoodsInfo,
+    DetailParamInfo,
 
     Scroll,
    
@@ -63,8 +74,25 @@ export default {
 
           //获取图片展示图片的数据
           this.detailInfo = data.detailInfo
+
+          //获取参数数据
+          this.DetailParamInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
       })
   },
+  methods:{
+    //在子组件mounted时刷新一次scroll
+    imageLoad(){
+      this.$refs.scroll.refresh()
+    },
+    //在监听到滚动时使用节流刷新scroll
+    contentScroll(position){
+      this.canRun()
+    }
+  },
+  mounted(){
+    //在mounted中加载节流函数
+    this.canRun = throttle(this.$refs.scroll.refresh,1000)
+  }
   
 }
 </script>

@@ -13,3 +13,22 @@ export function debounce(func,delay){
     },delay)
   }
 }
+/**
+ * 
+ * @param {Function} fn 
+ * @param {Number} interval 
+ * 函数节流
+ */
+export function throttle(fn, interval = 300) {
+  let canRun = true; 
+  return function () {
+    if (!canRun) return;
+    canRun = false; 
+    setTimeout(() => {
+     fn.apply(this, arguments);
+      canRun = true;
+    }, interval);
+  }  
+}
+  
+  

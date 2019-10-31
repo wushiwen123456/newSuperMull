@@ -92,7 +92,7 @@ export default {
       this.getHomeGoods('sell')
   },
   mounted(){
-    //图片加载时间监听
+    //图片加载事件监听
     const ref = debounce(this.$refs.scroll.refresh,400)
     //3.监听item中图片加载完成
     this.$bus.$on('itemImageLoad',()=> {
@@ -134,8 +134,10 @@ export default {
     getHomeGoods(type){
       const page = this.goods[type].page + 1
       getHomeGoods(type,page).then(res => {
-        this.goods[type].list.push(...res.data.list)
-        this.goods[type].page = page
+        if(!!res){
+          this.goods[type].list.push(...res.data.list)
+          this.goods[type].page = page
+        }
       }).catch(err => {
         throw err
       })

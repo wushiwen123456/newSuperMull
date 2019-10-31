@@ -12,7 +12,8 @@
       <img v-for="(item, index) in goodsInfo.detailImage[0].list" 
             :src="item" 
             alt=""
-            :key="index"> 
+            :key="index"
+           > 
     </div>
   </div>
   </div>
@@ -29,6 +30,9 @@ export default {
       }
     }
   },
+  mounted(){
+    this.$emit('imageLoad')
+  }
 
 }
 </script>
