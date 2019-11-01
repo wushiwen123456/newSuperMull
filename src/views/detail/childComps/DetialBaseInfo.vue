@@ -73,7 +73,17 @@ export default {
     position: relative;
     top: -8px;
   }
-
+  @media screen and (max-width: 375px){
+      .info-service{
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .info-service>*{
+        text-align: center;
+        width: 50%;
+        line-height: 30px;
+      }
+  }
   .info-other {
     margin-top: 15px;
     line-height: 30px;

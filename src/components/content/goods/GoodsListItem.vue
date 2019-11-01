@@ -1,10 +1,10 @@
 <template>
   <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="" @load="imgLoad" @click="itemClick">
+    <img :src="isImgUrl" alt="" @load="imgLoad" @click="itemClick">
     <div class="goods-info">
-      <p>{{goodsItem.title}}</p>
-      <span class="price">{{goodsItem.price}}</span>
-      <span class="collect">{{goodsItem.cfav}}</span>
+      <p>{{goodsItem[titleUrl]}}</p>
+      <span class="price">{{goodsItem[priceUrl]}}</span>
+      <span class="collect">{{goodsItem[cfavUrl]}}</span>
     </div>
   </div>
 </template>
@@ -18,16 +18,56 @@ export default {
       default(){
         return {}
       } 
+    },
+    imgUrl:{
+      type:Array,
+      default(){
+        return ['show','img']
+      }
+    },
+    titleUrl:{
+      type:String,
+      default(){
+        return 'title'
+      }
+    },
+    priceUrl:{
+      type:String,
+      default(){
+        return 'price'
+      }
+    },
+    cfavUrl:{
+      type:String,
+      default(){
+        return 'cfav'
+      }
+    },
+    isMethod:{
+      type:Boolean,
+      default(){
+        return true
+      }
     }
   },
   methods:{
     imgLoad(){
+      if(this.isMethod)
       this.$bus.$emit('itemImageLoad')
     },
     itemClick(){
+      if(this.isMethod)
       this.$router.push('/detail/' + this.goodsItem.iid)
     }
+  },
+  computed:{
+    isImgUrl(){
+      return this.imgUrl.reduce((a, i) => a && a[i], this.goodsItem)
+    }
   }
+    
+  
+  
 }
 </script>
 
