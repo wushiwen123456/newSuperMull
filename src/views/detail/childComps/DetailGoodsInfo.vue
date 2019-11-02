@@ -7,7 +7,7 @@
       <div class="desc">{{goodsInfo.desc}}</div>
       <div class="end"></div>
     </div>
-    <div class="info-key">{{goodsInfo.detailImage[0].key}}</div>
+    <h2 class="info-key">{{goodsInfo.detailImage[0].key}}</h2>
     <div class="info-list">
       <img v-for="(item, index) in goodsInfo.detailImage[0].list" 
             :src="item" 
@@ -31,7 +31,9 @@ export default {
     }
   },
   mounted(){
-    this.$emit('imageLoad')
+    this.$nextTick(() => {
+      this.$emit('imageLoad')
+    })
   }
 
 }
@@ -86,6 +88,8 @@ export default {
     font-size: 15px;
     text-overflow: ellipsis;
     overflow: hidden;
+    margin: 10px 0;
+    text-align: center;
   }
 
   .info-list img {

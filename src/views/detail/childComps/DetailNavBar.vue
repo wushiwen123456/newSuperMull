@@ -22,23 +22,36 @@ import NavBar from 'components/common/navbar/NavBar'
 
 export default {
   name:"DetailNavBar",
+  props:{
+    detailIndex:{
+      type:Number,
+      default(){
+        return 0
+      }
+    }
+  },
   components:{
-    NavBar
+    NavBar,
+    currentIndex:0
   },
   data(){
     return {
-      titles:['商品','参数','评论','推荐']
-      ,currentIndex:0
+      titles:['商品','参数','评论','推荐'],
     }
   },
   methods:{
     itemClick(index){
-      this.currentIndex = index
+      this.$emit('navBarClick',index)
     },
     backClick(){
       this.$router.back()
     }
-  }
+  },
+  computed:{
+    currentIndex(){
+      return this.detailIndex
+    }
+  }  
 }
 
 </script>

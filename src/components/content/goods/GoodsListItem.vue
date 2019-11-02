@@ -43,7 +43,13 @@ export default {
         return 'cfav'
       }
     },
-    isMethod:{
+    isLoad:{
+      type:Boolean,
+      default(){
+        return true
+      }
+    },
+    isClick:{
       type:Boolean,
       default(){
         return true
@@ -51,12 +57,14 @@ export default {
     }
   },
   methods:{
+    //控制图片加载完是否传递事件给事件总线
     imgLoad(){
-      if(this.isMethod)
+      if(this.isLoad)
       this.$bus.$emit('itemImageLoad')
     },
+    // 控制点击图片是否跳转router
     itemClick(){
-      if(this.isMethod)
+      if(this.isClick)
       this.$router.push('/detail/' + this.goodsItem.iid)
     }
   },

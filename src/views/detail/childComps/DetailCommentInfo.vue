@@ -13,7 +13,8 @@
       </div>
       <div class="user-main">
         <p class="content">{{commontInfo.content}}</p>
-        <p class="style">{{commontInfo.style}}</p>
+        <div class="style"><span>{{commontInfo.created | showDate}}</span><span>{{commontInfo.style}}</span></div>
+        
       </div>
       <div v-if="commontInfo.images" class="user-image">
         <img v-for="(item,index) in commontInfo.images" :key="index" :src="item" alt="">
@@ -22,7 +23,8 @@
   </div>
 </template>
 
-<script scoped>
+<script>
+import { formatDate } from "common/utils";
 export default {
   name:"DetailCommentInfo",
   props:{
@@ -31,16 +33,17 @@ export default {
       default(){
         return {}
       }
-    },
-    data(){
-      return {
-       isCommontUser:false
-      }
-    },
-    mounted(){
-      this.isCommontUser = true
-    }
+    }  
   },
+  filters:{
+      showDate(value){
+        // 将时间戳转换成date对象
+        const date = new Date(value * 1000)
+
+        // 将date格式化
+        return formatDate(date,'yyyy-MM-dd')
+      }
+  }
 }
 </script>
 
@@ -79,6 +82,9 @@ export default {
   .style{
     color: #999;
     font-size: 12px;
+  }
+  .style>span{
+    margin-right: 20px;
   }
   .user-image{
     margin-top: 10px;

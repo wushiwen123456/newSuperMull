@@ -1,12 +1,13 @@
 <template>
   <div v-if="recommendList.length" class="detail-recommend">
-    <div class="title">热门推荐</div>
+    <h2 class="title">热门推荐</h2>
     <div class="recommend-list">
       <goods-list-item v-for="(item,index) in recommendList" 
                       :key="index"
                       :imgUrl="['image']" 
                       :goods-item="item"
-                      :isMethod="false"/>
+                      :isLoad="false"
+                      :isClick="false"/>
     </div>
   </div>
 </template>
@@ -35,8 +36,10 @@ export default {
     box-sizing: border-box
   }
   .title{
-    font-size: 14px;
-    margin-bottom: 15px;
+    /* font-size: 14px; */
+    margin: 20px 0;
+    display: flex;
+    justify-content: center
   }
   .recommend-list{
     display: grid;

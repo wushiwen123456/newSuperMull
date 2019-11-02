@@ -1,6 +1,9 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"/>
+    <detail-nav-bar class="detail-nav" 
+                    @navBarClick="navBarClick" 
+                    ref="detailNavBar"
+                    :detailIndex="detailIndex"/>
     <!-- 使用better-scroll组件 -->
     <scroll class="content" 
             ref="scroll" 
@@ -10,9 +13,9 @@
       <detial-base-info :goods="Goods"/>
       <detail-shop-info :shop="shop"/>
       <detail-goods-info :goods-info="detailInfo" @imageLoad="imageLoad"/>
-      <detail-param-info :param-info="DetailParamInfo" />
-      <detail-comment-info :commont-info="commontInfo"/>
-      <detail-recommend-info :recommend-list="recommendList" />
+      <detail-param-info ref="param" :param-info="DetailParamInfo"/>
+      <detail-comment-info ref="comment" :commont-info="commontInfo"/>
+      <detail-recommend-info ref="recommend" :recommend-list="recommendList" />
     </scroll>
     <main-tab-bar />
   </div>
@@ -37,7 +40,7 @@ import MainTabBar from 'components/content/mainTabBar/MainTabBar'
 import {getDetail,Goods,shop,GoodsParam,getRecommend} from 'network/detail'
 
 //导入工具类
-import { throttle } from "common/utils"
+import { throttle,getThemeTopYs,goOnce,debounce} from "common/utils"
 
 export default {
   name:"Detail",
@@ -51,7 +54,11 @@ export default {
       DetailParamInfo:{},
       commontInfo:{},
       recommendList:[],
-      canRun:""//保存节流函数
+      themeTopYs:[],//保存y值
+      canRun:"",//保存节流函数
+      monitorTop:"",//保存节流函数
+      addThemeTopYs:"",//保存节流函数
+      detailIndex:0
     }
   },
   components:{
@@ -70,16 +77,17 @@ export default {
   },
   created(){
     this._getDetailData()
-    this._getRecommendData()
+    this._getRecommendData() 
   },
   methods:{
     //在子组件mounted时刷新一次scroll
     imageLoad(){
       this.$refs.scroll.refresh()
     },
-    //在监听到滚动时使用节流刷新scroll
+    //在监听到滚动时使用节流刷新scroll，并且监听顶部导航
     contentScroll(position){
       this.canRun()
+      this.themeIndex(position.y,this.themeTopYs)
     },
 
     //封装请求数据的方法
@@ -90,7 +98,7 @@ export default {
       //2.根据iid获取不同的数据
       getDetail(iid).then(res => {
         const data = res.result
-        if(data){
+        if(!!data){
           //获取顶部图片数据
           this.topImages = data.itemInfo.topImages
 
@@ -107,7 +115,8 @@ export default {
           this.DetailParamInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
 
           //获取评论信息 
-          this.commontInfo = data.rate.list[0] || {};
+          this.commontInfo = data.rate.list[0] || {};  
+          
         }
       })
     },
@@ -116,11 +125,45 @@ export default {
         if(error) return 
         this.recommendList = res.data.list
       })
+    },
+    // 导航点击切换事件
+    navBarClick(index){
+      // 获取相关元素的offsetTop值
+         this.getThemeTopYs()    
+      this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],0)
+      this.detailIndex = index
+    },
+    //获取y值
+    getThemeTopYs(){
+          this.themeTopYs = []
+          this.themeTopYs.push(0,
+                    this.$refs.param.$el.offsetTop,
+                    this.$refs.comment.$el.offsetTop,
+                    this.$refs.recommend.$el.offsetTop)               
+    },
+    /**
+     * 根据传进来的number判断对应的数组的索引值
+     * @param {Number} value 
+     * @param {Array} arr 
+    */
+    themeIndex(value,arr) {
+      let a = 0
+      // console.log(arr)
+      arr.some((x,i,arr) => {
+        a = i;
+        return !!arr[i+1] && value <= -arr[i] && value > -arr[i+1]
+      })
+      this.detailIndex = a
     }
   },
   mounted(){
-    //在mounted中加载节流函数
-    this.canRun = throttle(this.$refs.scroll.refresh,1000)
+    //滚动时刷新scroll,使用节流函数
+    this.canRun = throttle(this.$refs.scroll.refresh,300)    
+    // 执行防抖加载this.themeTopYs
+    this.addThemeTopYs =  debounce(this.getThemeTopYs,300)
+  },
+  updated(){
+     this.addThemeTopYs()
   }
   
   
@@ -133,6 +176,7 @@ export default {
     z-index: 9;
     background-color: #fff;
     height: 100vh;
+    position: relative;
   }
   .detail-nav{
     position: relative;
@@ -141,5 +185,6 @@ export default {
   }
   .content{
     height: calc(100% - 44px);
+    overflow: hidden
   }
 </style>
