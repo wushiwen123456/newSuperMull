@@ -119,7 +119,7 @@ export default {
           this.DetailParamInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
 
           //获取评论信息 
-         if(!!data.rate.list[0]) this.commontInfo = data.rate.list[0]
+         if(!!data.rate.list) this.commontInfo = data.rate.list[0]
          else{this.commontInfo = {}}
           
         }
@@ -128,7 +128,8 @@ export default {
     _getRecommendData(){
       getRecommend().then((res,error) => {
         if(error) return 
-        this.recommendList = res.data.list
+        if(res.data) this.recommendList = res.data.list
+       
       })
     },
     // 导航点击切换事件
@@ -165,10 +166,19 @@ export default {
     
    //回到顶部
     backClick(){
-      this.$refs.scroll.scrollTo(0,0,500)
+      this.$refs.scroll.scrollTo(0,0,200)
     },
+    //添加进购物车
     addToCart(){
-      console.log('----')
+      //获取购物车需要展示的信息
+      const product = {}
+      product.image = this.topImages[0]
+      product.title = this.Goods.title
+      product.desc = this.Goods.desc
+      product.newPrice = this.Goods.realPrice
+      product.iid = this.iid
+      //将商品添加到vuex中
+      this.$store.dispatch('addCart',product)
     }
   },
   mounted(){
@@ -191,7 +201,6 @@ export default {
     z-index: 9;
     background-color: #fff;
     height: 100vh;
-    position: relative;
   }
   .detail-nav{
     position: relative;

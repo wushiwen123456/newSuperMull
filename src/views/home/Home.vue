@@ -146,7 +146,7 @@ export default {
                                                                       
     //回到顶部
     backClick(){
-      this.$refs.scroll.scrollTo(0,0,500)
+      this.$refs.scroll.scrollTo(0,0,0)
     },
     //设置滚动事件  
     contentScroll(position){  
