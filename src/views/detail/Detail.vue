@@ -17,7 +17,8 @@
       <detail-comment-info ref="comment" :commont-info="commontInfo"/>
       <detail-recommend-info ref="recommend" :recommend-list="recommendList" />
     </scroll>
-    <main-tab-bar />
+    <detail-bottom-bar class="detail-bottom" @addCart="addToCart" />
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -31,10 +32,12 @@ import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo'
 import DetailCommentInfo from './childComps/DetailCommentInfo'
 import DetailRecommendInfo from './childComps/DetailRecommendInfo'
+import DetailBottomBar from './childComps/DetailBottomBar'
 
 // 导入公共模块
 import Scroll from 'components/common/scroll/Scroll'
-import MainTabBar from 'components/content/mainTabBar/MainTabBar'
+import BackTop from 'components/content/backTop/BackTop'
+
 
 //导入网络请求模块
 import {getDetail,Goods,shop,GoodsParam,getRecommend} from 'network/detail'
@@ -56,9 +59,9 @@ export default {
       recommendList:[],
       themeTopYs:[],//保存y值
       canRun:"",//保存节流函数
-      monitorTop:"",//保存节流函数
       addThemeTopYs:"",//保存节流函数
-      detailIndex:0
+      detailIndex:0,
+      isShowBackTop:false,
     }
   },
   components:{
@@ -70,9 +73,9 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     DetailRecommendInfo,
-
-    MainTabBar,
+    DetailBottomBar,
     Scroll,
+    BackTop
    
   },
   created(){
@@ -87,7 +90,8 @@ export default {
     //在监听到滚动时使用节流刷新scroll，并且监听顶部导航
     contentScroll(position){
       this.canRun()
-      this.themeIndex(position.y,this.themeTopYs)
+      this.themeIndex(Math.abs(position.y),this.themeTopYs)
+      this.isShowBackTop = (-position.y) > 1000;
     },
 
     //封装请求数据的方法
@@ -115,7 +119,8 @@ export default {
           this.DetailParamInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
 
           //获取评论信息 
-          this.commontInfo = data.rate.list[0] || {};  
+         if(!!data.rate.list[0]) this.commontInfo = data.rate.list[0]
+         else{this.commontInfo = {}}
           
         }
       })
@@ -139,21 +144,31 @@ export default {
           this.themeTopYs.push(0,
                     this.$refs.param.$el.offsetTop,
                     this.$refs.comment.$el.offsetTop,
-                    this.$refs.recommend.$el.offsetTop)               
+                    this.$refs.recommend.$el.offsetTop,
+                    Number.MAX_VALUE)              
     },
+    
     /**
      * 根据传进来的number判断对应的数组的索引值
      * @param {Number} value 
      * @param {Array} arr 
     */
     themeIndex(value,arr) {
-      let a = 0
-      // console.log(arr)
-      arr.some((x,i,arr) => {
-        a = i;
-        return !!arr[i+1] && value <= -arr[i] && value > -arr[i+1]
-      })
-      this.detailIndex = a
+      let length = arr.length;
+      for (let i = 0; i < length-1; i++){
+        if((value >= this.themeTopYs[i] && value < this.themeTopYs[i+1])){
+          this.detailIndex = i;
+        }
+
+      }
+    },
+    
+   //回到顶部
+    backClick(){
+      this.$refs.scroll.scrollTo(0,0,500)
+    },
+    addToCart(){
+      console.log('----')
     }
   },
   mounted(){
@@ -184,7 +199,12 @@ export default {
     background-color: #fff;
   }
   .content{
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 49px);
     overflow: hidden
+  }
+  .detail-bottom{
+    height: 49px;
+    /* background: red; */
+    position: relative;
   }
 </style>

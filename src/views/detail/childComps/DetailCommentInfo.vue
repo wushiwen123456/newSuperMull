@@ -21,6 +21,9 @@
       </div>
     </div>
   </div>
+  <div v-else class="info-null">
+    还没有人评论呢，快来抢沙发把~~
+  </div>
 </template>
 
 <script>
@@ -93,5 +96,12 @@ export default {
     width: 70px;
     height:70px;
     margin-right: 5px;
+  }
+  .info-null{
+    text-align: center;
+    line-height: 100px;
+    padding-bottom: 15px;
+    font-size: 1rem;
+    border-bottom: 5px solid #f2f5f8;
   }
 </style>
