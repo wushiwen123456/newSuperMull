@@ -45,6 +45,8 @@ import {getDetail,Goods,shop,GoodsParam,getRecommend} from 'network/detail'
 //导入工具类
 import { throttle,getThemeTopYs,goOnce,debounce} from "common/utils"
 
+// 映射vuexActions
+import { mapActions } from 'vuex'
 export default {
   name:"Detail",
   data(){
@@ -76,13 +78,17 @@ export default {
     DetailBottomBar,
     Scroll,
     BackTop
-   
   },
   created(){
     this._getDetailData()
     this._getRecommendData() 
   },
   methods:{
+    // 映射vuexActions
+    ...mapActions({
+      add:'addCart'
+    }),
+
     //在子组件mounted时刷新一次scroll
     imageLoad(){
       this.$refs.scroll.refresh()
@@ -128,8 +134,7 @@ export default {
     _getRecommendData(){
       getRecommend().then((res,error) => {
         if(error) return 
-        if(res.data) this.recommendList = res.data.list
-       
+        if(res.data.list.length) this.recommendList = res.data.list
       })
     },
     // 导航点击切换事件
@@ -178,7 +183,9 @@ export default {
       product.newPrice = this.Goods.realPrice
       product.iid = this.iid
       //将商品添加到vuex中
-      this.$store.dispatch('addCart',product)
+      this.add(product).then(res => {
+        this.$toast.show(res,700)
+      })
     }
   },
   mounted(){
@@ -201,6 +208,7 @@ export default {
     z-index: 9;
     background-color: #fff;
     height: 100vh;
+    overflow: hidden;
   }
   .detail-nav{
     position: relative;

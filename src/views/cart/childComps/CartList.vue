@@ -7,8 +7,12 @@
         <p class="text title">{{item.title}}</p>
         <p class="text desc">{{item.desc}}</p>
         <div class="price">
-          <span class="new-price">{{item.newPrice}}</span>
-          <span class="item-count">{{item.count | count}}</span>
+          <span class="new-price">{{realPrice(index)}}</span>
+          <div class="count-box">
+             <sub-count @subClick="subClick(index)"/>
+            <input type="number" v-model.number="item.count" @input="input(index)" >
+             <add-count @addClick="addClick(index)"/>
+          </div>
         </div>
       </div>
       
@@ -18,6 +22,9 @@
 
 <script>
 import CheckedButton from 'components/content/checkedButton/CheckedButton'
+import AddCount from './AddCount'
+import SubCount from './SubCount'
+import { mapGetters } from 'vuex'
 export default {
   name:"CartList",
   props:{
@@ -29,16 +36,35 @@ export default {
     }
   },
   components:{
-    CheckedButton
+    CheckedButton,
+    AddCount,
+    SubCount
+  },
+  computed:{
+    ...mapGetters({
+      list:'cartList'
+    }),
   },
   methods:{
     checkedClick(index){
       this.cartList[index].checked = !this.cartList[index].checked
-    }
-  },
-  filters:{
-    count(value){
-      return 'x'+value 
+    },
+    addClick(index){
+        this.list[index].count++
+        this.list[index].checked = true
+    },
+    subClick(index){
+      let count = this.list[index].count
+      if(count>1){
+        this.list[index].count--
+        this.list[index].checked = true
+      }
+    },
+    realPrice(index){
+      return (this.list[index].count * this.list[index].newPrice).toFixed(2)
+    },
+    input(index){
+      this.list[index].checked = true
     }
   }
 }
@@ -88,5 +114,14 @@ export default {
   .new-price{
     font-size: 1.2rem;
     color: #ee9871;
+  }
+  .count-box{
+    width: 40%;
+    display: flex;
+    justify-content: space-between;
+  }
+  .count-box>input{
+    width: 30px;
+    text-align: center;
   }
 </style>

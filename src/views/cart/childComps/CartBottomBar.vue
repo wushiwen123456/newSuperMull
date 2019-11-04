@@ -63,7 +63,7 @@ export default {
     padding-left: 35px;
   }
   .check-all{
-    width: 9vw;
+    width: 10vw;
     display: flex;
     align-items: center
   }
