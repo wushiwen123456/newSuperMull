@@ -5,7 +5,7 @@
     <tab-control :titles="['流行','新款','精选']" 
                     @tabClick="tabClick" 
                     ref="tabControl1"
-                    class="tab-control"
+                    class="tab-control1"
                     v-show="isTabFixed"/>
     <!-- 使用better-scroll组件 -->
     
@@ -26,7 +26,7 @@
                     ref="tabControl2"
                     :class="{fixed:isTabFixed}"/>
       <!-- list数据部分 -->
-      <goods-list :goods="showGoods"  />
+      <goods-list :goods="showGoods" />
     </scroll> 
 
     <!-- 回到顶部 .native
@@ -51,7 +51,7 @@ import {
   getHomeGoods      
 }from 'network/home'
 
-import {debounce} from 'common/utils'
+import {debounce,throttle} from 'common/utils'
 
 
 export default {
@@ -69,7 +69,8 @@ export default {
       isShowBackTop:false,
       tabOffsetTop:0,
       isTabFixed:false,
-      saveY:0
+      saveY:0,
+      canRun:""
     }
   },
   components:{
@@ -92,14 +93,7 @@ export default {
       this.getHomeGoods('sell')
   },
   mounted(){
-    //图片加载事件监听
-    const ref = debounce(this.$refs.scroll.refresh,400)
-    //3.监听item中图片加载完成
-    this.$bus.$on('itemImageLoad',()=> {
-      //进行防抖操作:debounce,节流：throttle
-      ref()
-    })
-
+    this.canRun = throttle(this.$refs.scroll.refresh,1000)
   },
   methods:{
     /*
@@ -146,7 +140,7 @@ export default {
                                                                       
     //回到顶部
     backClick(){
-      this.$refs.scroll.scrollTo(0,0,0)
+      this.$refs.scroll.scrollTo(0,0,300                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   )
     },
     //设置滚动事件  
     contentScroll(position){  
@@ -155,6 +149,9 @@ export default {
 
       //2.决定tabControl是否吸顶(position:fixed)
       this.isTabFixed = (-position.y) > this.tabOffsetTop
+
+      // 刷新滚动
+      this.canRun()
     },
     //加载更多方法
     loadMore(){
@@ -192,6 +189,10 @@ export default {
  .home-nav{
    background-color: var(--color-tint);
    color: #fff;
+   position: fixed;
+   top: 0;
+   width: 100vw;
+   z-index: 999;
  }
   .content{
     overflow: hidden;
@@ -204,5 +205,11 @@ export default {
   .tab-control{
     position: relative;
     z-index: 32;
+  }
+  .tab-control1{
+    position: fixed;
+    top: 44px;
+    width: 100vw;
+    background-color: #fff;
   }
 </style>

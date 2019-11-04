@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item">
-    <img :src="isImgUrl" alt="" @load="imgLoad" @click="itemClick">
+    <img v-lazy="isImgUrl" alt="" @click="itemClick">
     <div class="goods-info">
       <p>{{goodsItem[titleUrl]}}</p>
       <span class="price">{{goodsItem[priceUrl]}}</span>
@@ -57,11 +57,6 @@ export default {
     }
   },
   methods:{
-    //控制图片加载完是否传递事件给事件总线
-    imgLoad(){
-      if(this.isLoad)
-      this.$bus.$emit('itemImageLoad')
-    },
     // 控制点击图片是否跳转router
     itemClick(){
       if(this.isClick)
@@ -72,10 +67,7 @@ export default {
     isImgUrl(){
       return this.imgUrl.reduce((a, i) => a && a[i], this.goodsItem)
     }
-  }
-    
-  
-  
+  }    
 }
 </script>
 

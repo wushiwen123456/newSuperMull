@@ -6,13 +6,17 @@ import store from './store'
 import toast from 'components/common/toast'
 // 移动端300延迟
 import FastClick from 'fastclick'
+// 图片懒加载
+import VueLazyLoad from 'vue-lazyload'
 FastClick.attach(document.body)
-
 
 Vue.use(toast)
 
+Vue.use(VueLazyLoad,{
+  loading: require('./assets/img/cart/timg.jpg')
+})
+
 Vue.config.productionTip = false
-Vue.prototype.$bus = new Vue()
 
 new Vue({
   render: h => h(App),

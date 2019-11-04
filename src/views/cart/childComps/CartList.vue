@@ -2,16 +2,16 @@
   <div class="cartlist">
     <div v-for="(item,index) in cartList" :key="index" class="list-item">
       <checked-button :is-checked="item.checked" @click.native="checkedClick(index)"/>
-      <div class="item-img"><img :src="item.image" alt=""></div>
+      <div class="item-img" @click="routeDetail(index)"><img :src="item.image" alt=""></div>
       <div class="item_text">
         <p class="text title">{{item.title}}</p>
         <p class="text desc">{{item.desc}}</p>
         <div class="price">
           <span class="new-price">{{realPrice(index)}}</span>
           <div class="count-box">
-             <sub-count @subClick="subClick(index)"/>
+             <count @countClick="subClick(index)" str="-"/>
             <input type="number" v-model.number="item.count" @input="input(index)" >
-             <add-count @addClick="addClick(index)"/>
+             <count @countClick="addClick(index)" str="+"/>
           </div>
         </div>
       </div>
@@ -22,8 +22,7 @@
 
 <script>
 import CheckedButton from 'components/content/checkedButton/CheckedButton'
-import AddCount from './AddCount'
-import SubCount from './SubCount'
+import Count from './Count'
 import { mapGetters } from 'vuex'
 export default {
   name:"CartList",
@@ -37,8 +36,7 @@ export default {
   },
   components:{
     CheckedButton,
-    AddCount,
-    SubCount
+    Count
   },
   computed:{
     ...mapGetters({
@@ -65,6 +63,10 @@ export default {
     },
     input(index){
       this.list[index].checked = true
+    },
+    routeDetail(index){
+      const iid = this.list[index].iid;
+      this.$router.push('/detail/'+ iid)
     }
   }
 }

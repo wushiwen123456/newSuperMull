@@ -39,7 +39,7 @@
     background-color: #fff;
     left: 0;
     right: 0;
-    bottom: 120px;
+    bottom: 40px;
     z-index: 10;
     display: flex;
     text-align: center;

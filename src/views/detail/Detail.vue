@@ -182,10 +182,12 @@ export default {
       product.desc = this.Goods.desc
       product.newPrice = this.Goods.realPrice
       product.iid = this.iid
-      //将商品添加到vuex中
-      this.add(product).then(res => {
-        this.$toast.show(res,700)
-      })
+      if(product.newPrice !== NaN && product.newPrice !== undefined && product.newPrice !== null){
+        //将商品添加到vuex中
+          this.add(product).then(res => {
+            this.$toast.show(res,700)
+          })
+      }
     }
   },
   mounted(){
@@ -216,12 +218,19 @@ export default {
     background-color: #fff;
   }
   .content{
-    height: calc(100% - 44px - 49px);
-    overflow: hidden
+    position: absolute;
+    overflow: hidden;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
   }
   .detail-bottom{
     height: 49px;
     /* background: red; */
-    position: relative;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 </style>

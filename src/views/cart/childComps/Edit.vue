@@ -1,14 +1,11 @@
 <template>
-  <div class="bottom-bar" v-show="!!this.list.length">
+  <div class="bottom-bar">
     <div class="check-all" @click="checkedClick" >
       <checked-button :is-checked="isSellectAll" />
       <span>全选</span>
     </div>
-    <div class="total-price" v-show="listCount">
-      合计：{{totalPrice}}
-    </div>
-    <div class="calculate" v-show="listCount">
-      去结算({{listCount}})
+    <div class="remote" v-show="listCount" @click="remove">
+      删 除({{listCount}})
     </div>
   </div>
 </template>
@@ -17,7 +14,7 @@
 import CheckedButton from 'components/content/checkedButton/CheckedButton'
 import { mapGetters } from 'vuex'
 export default {
-  name:"bottom-bar",
+  name:"Edit",
   components:{
     CheckedButton
   },
@@ -30,9 +27,6 @@ export default {
     ...mapGetters({
       list:'cartList'
     }),
-    totalPrice(){
-      return '¥' + this.list.filter(item => item.checked).reduce((preValue,item) => preValue + item.newPrice * item.count,0).toFixed(2)
-    },
     listCount(){
       return this.list.filter(item => item.checked).length
     },
@@ -46,6 +40,11 @@ export default {
         this.list.forEach(x => x.checked = false)
       }else{
         this.list.forEach(x => x.checked = true)
+      }
+    },
+    remove(){
+      for (let i = this.list.length - 1; i >= 0; i--){
+        if(this.list[i].checked) this.list.splice(i,1)
       }
     }
   }
@@ -70,9 +69,9 @@ export default {
     display: flex;
     align-items: center
   }
-  .calculate{
+  .remote{
     height: 100%;
-    padding:0 10px;
+    padding:0 20px;
     box-sizing: border-box;
     background-color: rgba(255, 51, 0,1);
     display: flex;

@@ -71,9 +71,6 @@ a {
   height: 100%;
   border-radius: 50%;
 }
-.button-count{
-    padding: 2px 5px;
-    border: 1px solid var(--color-text);
-    border-radius: 4px;
-    margin: 0 3px;
+.relative{
+  position: relative;
 }

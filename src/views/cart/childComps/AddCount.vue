@@ -1,5 +1,5 @@
 <template>
-  <span class="button-count" @click="myClick">+</span>
+  <span @click="myClick"  class="button-count">+</span>
 </template>
 
 <script>
