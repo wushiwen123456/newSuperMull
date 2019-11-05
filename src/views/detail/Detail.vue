@@ -1,9 +1,10 @@
 <template>
-  <div id="detail">
+  <div id="detail" :style="{height:$store.getters.innerHeight}">
     <detail-nav-bar class="detail-nav" 
                     @navBarClick="navBarClick" 
                     ref="detailNavBar"
-                    :detailIndex="detailIndex"/>
+                    :detailIndex="detailIndex"
+                    :style="{height:innerHeight}"/>
     <!-- 使用better-scroll组件 -->
     <scroll class="content" 
             ref="scroll" 
@@ -198,6 +199,11 @@ export default {
   },
   updated(){
      this.addThemeTopYs()
+  },
+  computed:{
+    innerHeight(){
+      return window.innerHeight + 'px'
+    }
   }
   
   
@@ -209,7 +215,6 @@ export default {
     position: relative;
     z-index: 9;
     background-color: #fff;
-    height: 100vh;
     overflow: hidden;
   }
   .detail-nav{
@@ -224,6 +229,7 @@ export default {
     bottom: 49px;
     left: 0;
     right: 0;
+    z-index: 999;
   }
   .detail-bottom{
     height: 49px;

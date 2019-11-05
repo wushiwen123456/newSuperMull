@@ -1,5 +1,5 @@
 <template>
-  <div class="category">
+  <div class="category" :style="{height:$store.getters.innerHeight}">
     <nav-bar class="nav-bar">
       <div slot="center" >商品分类</div>
     </nav-bar>
@@ -77,6 +77,7 @@ export default {
     _getCategory(){
       getCategory().then(res => {
         // 拿到数据
+        if(Object.keys(res.data).length)
         this.categories = res.data.category.list
 
         // 遍历数据，对categoryData进行数据结构初始化
@@ -104,13 +105,19 @@ export default {
     _getSubcategories(index){
       this.currentIndex = index;
       const maitKey = this.categories[index].maitKey
-      getSubCategory(maitKey).then(res => {
-        this.categoryData[index].subCategories = res.data
-        this.categoryData = {...this.categoryData}
-        this._getCategoryDetail(POP)
-        this._getCategoryDetail(SELL)
-        this._getCategoryDetail(NEW)
-      })
+      
+      // 判断数据是否已经存放在数组里，如果没有存放则请求数据
+      if(!this.categoryData[index].categoryDetail.sell.length){
+        getSubCategory(maitKey).then(res => {
+          console.log('load')
+          this.categoryData[index].subCategories = res.data
+          this.categoryData = {...this.categoryData}
+          this._getCategoryDetail(NEW)
+          this._getCategoryDetail(POP)
+          this._getCategoryDetail(SELL)
+        })
+      }
+      
     },
     _getCategoryDetail(type){
       const miniWallkey = this.categories[this.currentIndex].miniWallkey
@@ -133,15 +140,19 @@ export default {
           if(~!!this.currentType.indexOf('sell')) this.currentType = 'sell'
           break;
       }
-      console.log(this.currentType)
       
     },
+    // better scroll滚动时刷新
     toScroll(){
-      console.log('-----')
+      this.throttle()
     }
   },
   updated(){
     // 页面加载时刷新scroll
+    this.throttle()
+  },
+    // 页面活跃时刷新
+  activated(){
     this.throttle()
   }
   

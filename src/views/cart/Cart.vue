@@ -1,5 +1,5 @@
 <template>
-  <div id="cart" class="relative" :style="{height:innerHeight}" >
+  <div id="cart" class="relative" :style="{height:$store.getters.innerHeight}" >
     <nav-bar class="nav-bar" :class="{edit:!isEdit}">
       <div slot="center">购物车({{length}})</div>
       <div slot="right" @click="dateUpEdit">{{state}}</div>

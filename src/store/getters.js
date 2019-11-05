@@ -4,5 +4,8 @@ export default {
   },
   cartList(state){
     return state.cartList
+  },
+  innerHeight(state){
+    return window.innerHeight + 'px'
   }
 }
