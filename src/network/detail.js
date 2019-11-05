@@ -1,4 +1,4 @@
-//导入request网络请求方法
+  //导入request网络请求方法
 import {request} from './request'
 /**
  * 
