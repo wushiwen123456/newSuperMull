@@ -33,6 +33,7 @@ export default {
     display: flex;
     align-items: center;
     position: relative;
+    margin-top: -2px;
   }
   .user-icon{
     width: 60px;
